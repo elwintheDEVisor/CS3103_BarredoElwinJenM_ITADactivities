@@ -6,59 +6,78 @@ class ImmutableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 255, 241, 224),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      color: const Color(0xFFF5F5F5),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 20),
+            _buildSection('Professional Goal', 'To become a skilled and innovative software developer, contributing to cutting-edge projects and continuously expanding my knowledge in the field of technology.'),
+            const SizedBox(height: 20),
+            _buildSection('Education', 'Bachelor of Science in Computer Science\nBatangas State University\nExpected Graduation: 2025'),
+            const SizedBox(height: 20),
+            _buildSection('Skills', 'Programming Languages: Java, Python, C++\nWeb Technologies: HTML, CSS, JavaScript\nMobile Development: Flutter\nDatabase: SQL\nVersion Control: Git'),
+            const SizedBox(height: 20),
+            _buildSection('Projects', '• Personal CV App (Flutter)\n• E-commerce Website (HTML, CSS, JavaScript)\n• Student Management System (Java)'),
+            const SizedBox(height: 20),
+            _buildSection('Experience', 'None so far'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: const Color(0xFF2D4BC1),
+          child: const Text(
+            'EB',
+            style: TextStyle(fontSize: 30, color: Colors.white),
+          ),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: const Color.fromARGB(82, 45, 75, 193),
-                child: const Text(
-                  'EB',
-                  style: TextStyle(fontSize: 30, color: Colors.white),
-                ),
+            children: const [
+              Text(
+                'Elwin Jen Barredo',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF2D4BC1)),
               ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Elwin Jen Barredo',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text('+639611405162'),
-                  SizedBox(height: 4),
-                  Text('22-07108@g.batstate-u.edu.ph'),
-                ],
-              ),
+              SizedBox(height: 8),
+              Text('+639611405162', style: TextStyle(fontSize: 16)),
+              SizedBox(height: 4),
+              Text('22-07108@g.batstate-u.edu.ph', style: TextStyle(fontSize: 16)),
             ],
           ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Text('Sample Professional Goal'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSection(String title, String content) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2D4BC1)),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(content, style: const TextStyle(fontSize: 16)),
+          ],
+        ),
       ),
     );
   }
