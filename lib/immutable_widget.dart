@@ -1,41 +1,41 @@
 import 'package:flutter/material.dart';
 
 class ImmutableWidget extends StatelessWidget {
-  const ImmutableWidget({super.key});
+  const ImmutableWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF5F5F5),
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             const SizedBox(height: 20),
-            _buildSection('Professional Goal', 'To become a skilled and innovative software developer, contributing to cutting-edge projects and continuously expanding my knowledge in the field of technology.'),
+            _buildSection(context, 'Professional Goal', 'To become a skilled and innovative software developer, contributing to cutting-edge projects and continuously expanding my knowledge in the field of technology.'),
             const SizedBox(height: 20),
-            _buildSection('Education', 'Bachelor of Science in Computer Science\nBatangas State University\nExpected Graduation: 2025'),
+            _buildSection(context, 'Education', 'Bachelor of Science in Computer Science\nBatangas State University\nExpected Graduation: 2025'),
             const SizedBox(height: 20),
-            _buildSection('Skills', 'Programming Languages: Java, Python, C++\nWeb Technologies: HTML, CSS, JavaScript\nMobile Development: Flutter\nDatabase: SQL\nVersion Control: Git'),
+            _buildSection(context, 'Skills', 'Programming Languages: Java, Python, C++\nWeb Technologies: HTML, CSS, JavaScript\nMobile Development: Flutter\nDatabase: SQL\nVersion Control: Git'),
             const SizedBox(height: 20),
-            _buildSection('Projects', '• Personal CV App (Flutter)\n• E-commerce Website (HTML, CSS, JavaScript)\n• Student Management System (Java)'),
+            _buildSection(context, 'Projects', '• Personal CV App (Flutter)\n• E-commerce Website (HTML, CSS, JavaScript)\n• Student Management System (Java)'),
             const SizedBox(height: 20),
-            _buildSection('Experience', 'None so far'),
+            _buildSection(context, 'Experience', 'None so far'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundColor: const Color(0xFF2D4BC1),
+          backgroundColor: Theme.of(context).primaryColor,
           child: const Text(
             'EB',
             style: TextStyle(fontSize: 30, color: Colors.white),
@@ -45,15 +45,18 @@ class ImmutableWidget extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
                 'Elwin Jen Barredo',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF2D4BC1)),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
-              SizedBox(height: 8),
-              Text('+639611405162', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 4),
-              Text('22-07108@g.batstate-u.edu.ph', style: TextStyle(fontSize: 16)),
+              const SizedBox(height: 8),
+              Text('+639611405162', style: Theme.of(context).textTheme.bodyLarge),
+              const SizedBox(height: 4),
+              Text('22-07108@g.batstate-u.edu.ph', style: Theme.of(context).textTheme.bodyLarge),
             ],
           ),
         ),
@@ -61,7 +64,7 @@ class ImmutableWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, String content) {
+  Widget _buildSection(BuildContext context, String title, String content) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -72,13 +75,17 @@ class ImmutableWidget extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2D4BC1)),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
             const SizedBox(height: 8),
-            Text(content, style: const TextStyle(fontSize: 16)),
+            Text(content, style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
       ),
     );
   }
 }
+

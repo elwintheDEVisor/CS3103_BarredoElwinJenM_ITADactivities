@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:cv/immutable_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
-import 'immutable_widget.dart';
 
 class BasicScreen extends StatefulWidget {
   const BasicScreen({Key? key}) : super(key: key);
@@ -14,6 +14,7 @@ class BasicScreen extends StatefulWidget {
 
 class _BasicScreenState extends State<BasicScreen> {
   File? _profileImage;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -21,123 +22,150 @@ class _BasicScreenState extends State<BasicScreen> {
     _loadProfileImage();
   }
 
-  // Load profile image path from shared preferences
   Future<void> _loadProfileImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? imagePath = prefs.getString('profile_image_path');
-    if (imagePath != null && File(imagePath).existsSync()) {
-      setState(() {
-        _profileImage = File(imagePath);
-      });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? imagePath = prefs.getString('profile_image_path');
+      if (imagePath != null && await File(imagePath).exists()) {
+        setState(() {
+          _profileImage = File(imagePath);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading profile image: $e');
     }
   }
 
-  // Update profile image using image picker
   Future<void> _updateProfileImage() async {
-    final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    try {
+      final picker = ImagePicker();
+      final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      final File image = File(pickedFile.path);
-      setState(() {
-        _profileImage = image;
-      });
+      if (pickedFile != null) {
+        final File image = File(pickedFile.path);
+        setState(() {
+          _profileImage = image;
+        });
 
-      // Save the image path to shared preferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('profile_image_path', image.path);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('profile_image_path', image.path);
+      }
+    } catch (e) {
+      debugPrint('Error updating profile image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to update profile image'),
+          backgroundColor: Color(0xFFD32F2F),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('My CV'),
-        backgroundColor: const Color(0xFF2D4BC1),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
       ),
-      drawer: Drawer(
+      drawer: _buildDrawer(),
+      body: const ImmutableWidget(),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xFF2D4BC1),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: _updateProfileImage,
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.white,
-                          backgroundImage: _profileImage != null
-                              ? FileImage(_profileImage!)
-                              : null,
-                          child: _profileImage == null
-                              ? const Text(
-                                  'EB',
-                                  style: TextStyle(fontSize: 24, color: Color(0xFF2D4BC1)),
-                                )
-                              : null,
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.edit,
-                              size: 14,
-                              color: Color(0xFF2D4BC1),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Elwin Jen Barredo',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildDrawerHeader(),
             _buildDrawerItem(Icons.school, 'Education'),
             _buildDrawerItem(Icons.code, 'Skills'),
             _buildDrawerItem(Icons.work, 'Projects'),
             _buildDrawerItem(Icons.business_center, 'Experience'),
-            const Divider(),
-            _buildDrawerItem(Icons.logout, 'Logout', onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
-            }),
+            const Divider(color: Color(0xFF8E4585)),
+            _buildDrawerItem(Icons.logout, 'Logout', onTap: _logout),
           ],
         ),
       ),
-      body: const ImmutableWidget(),
+    );
+  }
+
+  Widget _buildDrawerHeader() {
+    return DrawerHeader(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: _updateProfileImage,
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white,
+                  backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                  child: _profileImage == null
+                      ? const Text(
+                          'EB',
+                          style: TextStyle(fontSize: 24, color: Color(0xFF8E4585)),
+                        )
+                      : null,
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      size: 14,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Elwin Jen Barredo',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildDrawerItem(IconData icon, String title, {VoidCallback? onTap}) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2D4BC1)),
-      title: Text(title),
-      onTap: onTap ?? () {},
+      leading: Icon(icon, color: Theme.of(context).primaryColor),
+      title: Text(title, style: TextStyle(color: Theme.of(context).primaryColor)),
+      onTap: onTap ?? () => Navigator.pop(context),
+    );
+  }
+
+  void _logout() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
 }
+
